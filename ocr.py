@@ -1,18 +1,21 @@
 import os
-import pdf2image
-from PIL import Image
+import pytesseract
+from datetime import datetime
 
-input_dir = os.path.join(os.curdir, 'data/pdf2image_input')
-output_dir = os.path.join(os.curdir, 'data/pdf2image_output')
+if __name__ == "__main__":
+    input_dir = os.path.join(os.curdir, 'data/pdf2image_output')
+    output_dir = os.path.join(os.curdir, 'data/ocr_output')
 
-pdf_files = ([x for x in os.listdir(input_dir)])
+    image_files = sorted([x for x in os.listdir(input_dir)])
 
-for pdf_file in pdf_files:
+    for image_file in image_files:
 
-    pdf_path = os.path.join(input_dir, pdf_file)
-    print(pdf_path)
+        image_path = os.path.join(input_dir, image_file)
+        print(image_path)
 
-    images = pdf2image.convert_from_path(pdf_path)
+        text = pytesseract.image_to_string(image_path)
 
-    for i, image in enumerate(images):
-        image.save(f'{output_dir}/image{i+1}.png', 'PNG')
+        timestamp_str = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+
+        with open(f'{output_dir}/{image_file}_{timestamp_str}.txt', 'w') as output_file:
+            output_file.write(text)
