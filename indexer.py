@@ -1,13 +1,16 @@
 import os
 import tiktoken
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from datetime import datetime
 from fastapi.encoders import jsonable_encoder
 import json
-from langchain.embeddings import OpenAIEmbeddings
 from dotenv import load_dotenv
+import openai
+
+from utils import get_timestamp_str
 
 load_dotenv()
+
+openai.api_key = os.environ['OPENAI_API_KEY']
 
 
 INPUT_DIR = "data/indexer_input"
@@ -53,6 +56,18 @@ if __name__ == "__main__":
 
     chunks = text_splitter.create_documents(texts, metadatas=sources)
 
-    timestamp_str = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-    with open(f"{OUTPUT_DIR}/{timestamp_str}_chunks.json", "w") as file:
+    with open(f"{OUTPUT_DIR}/{get_timestamp_str()}_chunks.json", "w") as file:
         file.write(json.dumps(jsonable_encoder(chunks)))
+
+    index = []
+
+    for chunk in chunks:
+        response = openai.Embedding.create(
+            input=chunk.page_content, engine=EMBEDDING_MODEL)
+        embedding = response["data"][0]["embedding"]
+
+        index.append({"content": chunk.page_content,
+                     "source": chunk.metadata["source"], "embedding": embedding})
+
+    with open(f"{OUTPUT_DIR}/{get_timestamp_str()}_index.json", "w") as file:
+        file.write(json.dumps(index))
