@@ -20,7 +20,7 @@ TOKENIZER = "cl100k_base"
 CHAT_MODEL = "gpt-3.5-turbo"
 EMBEDDING_MODEL = "text-embedding-ada-002"
 
-CHUNK_SIZE = 500
+CHUNK_SIZE = 1100
 CHUNK_OVERLAP = 50
 
 
