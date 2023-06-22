@@ -1,0 +1,21 @@
+{
+  "id": "chatcmpl-7TEMIt3JeubFyRIFcIf5fqLdqAlTF",
+  "object": "chat.completion",
+  "created": 1687201062,
+  "model": "gpt-4-0314",
+  "usage": {
+    "prompt_tokens": 1067,
+    "completion_tokens": 322,
+    "total_tokens": 1389
+  },
+  "choices": [
+    {
+      "message": {
+        "role": "assistant",
+        "content": "[\"Basic Room action\", \"Emergency Room\", \"Treat your Wounds\", \"Serious Wounds\", \"Light Wounds\", \"Evacuation Section A\", \"Evacuation Section B\", \"Escape Pod\", \"Unlocked\", \"Noise roll\", \"Intruder\", \"Character\", \"Fire Control System\", \"Fire Control procedure\", \"Fire marker\", \"Event card\", \"Generator\", \"Initiate\", \"self-destruct Sequence\", \"Status marker\", \"Time marker\", \"Self-Destruct Track\", \"yellow space\", \"Escape Pods\", \"Locked\", \"skull icon\", \"ship explodes\", \"Laboratory\", \"Analyse 1 object\", \"Characters Corpse\", \"Intruder Carcass\", \"Egg\", \"Intruder Weakness card\", \"Nest\", \"Take one Egg\", \"Egg token\", \"Intruder Board\", \"Injury marker\", \"Fire Damage step\", \"Event Phase\", \"Search Action\", \"Destroying Eggs\", \"Shoot Action\", \"Melee Attack Action\", \"Contamination card\", \"Grenade\", \"Molotov Cocktail\", \"Storage\", \"Search for an Item\", \"Item deck\", \"chosen color\", \"Red\", \"Yellow\", \"Green\", \"Surgery\", \"Perform a Surgery procedure\", \"Scan\", \"Contamination cards\", \"Action deck\", \"hand\", \"Discard\", \"Infected cards\", \"Larva\", \"Character board\", \"Light Wound\", \"Additional Rooms\", \"randomly chosen\", \"number 2\", \"back\"]"
+      },
+      "finish_reason": "stop",
+      "index": 0
+    }
+  ]
+}

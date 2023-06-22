@@ -17,8 +17,8 @@ INPUT_DIR = "data/indexer_input"
 OUTPUT_DIR = "data/indexer_output"
 
 TOKENIZER = "cl100k_base"
-CHAT_MODEL = "gpt-3.5-turbo"
 EMBEDDING_MODEL = "text-embedding-ada-002"
+CHAT_MODEL = "gpt-4"
 
 CHUNK_SIZE = 1100
 CHUNK_OVERLAP = 50
@@ -62,12 +62,23 @@ if __name__ == "__main__":
     index = []
 
     for chunk in chunks:
-        response = openai.Embedding.create(
-            input=chunk.page_content, engine=EMBEDDING_MODEL)
-        embedding = response["data"][0]["embedding"]
+        try:
+            embedding_response = openai.Embedding.create(
+                input=chunk.page_content, engine=EMBEDDING_MODEL)
+            embedding = embedding_response["data"][0]["embedding"]
 
-        index.append({"content": chunk.page_content,
-                     "source": chunk.metadata["source"], "embedding": embedding})
+            keywords_response = openai.ChatCompletion.create(model=CHAT_MODEL, messages=[
+                {"role": "user", "content": f"Extract keywords from the following text. Format them as an array of strings.\n\n{chunk.page_content}"}
+            ])
+            keywords = json.loads(
+                keywords_response["choices"][0]["message"]["content"])
+
+            index.append({"content": chunk.page_content,
+                          "source": chunk.metadata["source"], "embedding": embedding, "keywords": keywords})
+
+        except Exception as e:
+            print(f"Error occurred: {e}")
+            break
 
     with open(f"{OUTPUT_DIR}/{get_timestamp_str()}_index.json", "w") as file:
         file.write(json.dumps(index))

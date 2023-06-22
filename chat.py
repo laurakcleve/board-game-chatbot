@@ -4,6 +4,7 @@ import numpy
 import openai
 import streamlit as st
 from dotenv import load_dotenv
+from fuzzywuzzy import fuzz
 
 from utils import log
 
@@ -35,13 +36,23 @@ if st.button('Submit', key='generationSubmit'):
     with open('index.json', 'r') as file:
         index = json.load(file)
 
-    scores = []
+    keyword_scores = []
+    vector_scores = []
     for chunk in index:
-        score = similarity(question_embedding, chunk["embedding"])
-        scores.append(
-            {"content": chunk["content"], "score": score, "source": chunk["source"]})
 
-    sorted_scores = sorted(scores, key=lambda d: d["score"], reverse=True)
+        # Gives result of 0 - 100
+        keyword_score = fuzz.partial_token_set_ratio(
+            question, chunk["keywords"])
+        # Gives result of 0 - 1
+        vector_score = similarity(question_embedding, chunk["embedding"]) * 100
+
+        total_score = vector_score + keyword_score
+
+        vector_scores.append(
+            {"content": chunk["content"], "score": total_score, "source": chunk["source"]})
+
+    sorted_scores = sorted(
+        vector_scores, key=lambda d: d["score"], reverse=True)
 
     log(sorted_scores, 'data/chat_output', 'scores')
 
