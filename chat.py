@@ -6,7 +6,7 @@ import streamlit as st
 from dotenv import load_dotenv
 from fuzzywuzzy import fuzz
 
-from utils import log
+from utils.utils import log
 
 load_dotenv()
 

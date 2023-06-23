@@ -5,8 +5,9 @@ from fastapi.encoders import jsonable_encoder
 import json
 from dotenv import load_dotenv
 import openai
+from utils.openai_helpers import get_embedding
 
-from utils import get_timestamp_str
+from utils.utils import get_timestamp_str
 
 load_dotenv()
 
@@ -20,8 +21,8 @@ TOKENIZER = "cl100k_base"
 EMBEDDING_MODEL = "text-embedding-ada-002"
 CHAT_MODEL = "gpt-4"
 
-CHUNK_SIZE = 1100
-CHUNK_OVERLAP = 50
+CHUNK_SIZE = 100
+CHUNK_OVERLAP = 0
 
 
 if __name__ == "__main__":
@@ -51,7 +52,10 @@ if __name__ == "__main__":
         return len(tokens)
 
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP, length_function=tiktoken_len
+        chunk_size=CHUNK_SIZE,
+        chunk_overlap=CHUNK_OVERLAP,
+        length_function=tiktoken_len,
+        separators=["\n\n", "\n", r"\.\s"],
     )
 
     chunks = text_splitter.create_documents(texts, metadatas=sources)
@@ -63,18 +67,23 @@ if __name__ == "__main__":
 
     for chunk in chunks:
         try:
-            embedding_response = openai.Embedding.create(
-                input=chunk.page_content, engine=EMBEDDING_MODEL)
-            embedding = embedding_response["data"][0]["embedding"]
+            embedding = get_embedding(chunk.page_content)
 
-            keywords_response = openai.ChatCompletion.create(model=CHAT_MODEL, messages=[
-                {"role": "user", "content": f"Extract keywords from the following text. Format them as an array of strings.\n\n{chunk.page_content}"}
-            ])
-            keywords = json.loads(
-                keywords_response["choices"][0]["message"]["content"])
+            # keywords_response = openai.ChatCompletion.create(model=CHAT_MODEL, messages=[
+            #     {"role": "user", "content": f"Extract keywords from the following text. Format them as an array of strings.\n\n{chunk.page_content}"}
+            # ])
+            # keywords = json.loads(
+            #     keywords_response["choices"][0]["message"]["content"])
 
-            index.append({"content": chunk.page_content,
-                          "source": chunk.metadata["source"], "embedding": embedding, "keywords": keywords})
+            # index.append({"content": chunk.page_content,
+            #               "source": chunk.metadata["source"], "embedding": embedding, "keywords": keywords})
+            index.append(
+                {
+                    "content": chunk.page_content,
+                    "source": chunk.metadata["source"],
+                    "embedding": embedding,
+                }
+            )
 
         except Exception as e:
             print(f"Error occurred: {e}")
