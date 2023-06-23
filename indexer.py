@@ -1,8 +1,8 @@
 import os
+import json
 import tiktoken
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from fastapi.encoders import jsonable_encoder
-import json
 from dotenv import load_dotenv
 import openai
 from utils.openai_helpers import get_embedding
@@ -11,7 +11,7 @@ from utils.utils import get_timestamp_str
 
 load_dotenv()
 
-openai.api_key = os.environ['OPENAI_API_KEY']
+openai.api_key = os.environ["OPENAI_API_KEY"]
 
 
 INPUT_DIR = "data/indexer_input"
@@ -26,11 +26,9 @@ CHUNK_OVERLAP = 0
 
 
 if __name__ == "__main__":
-
     encoding = tiktoken.get_encoding(TOKENIZER)
 
-    files = ([x for x in os.listdir(
-        os.path.join(os.curdir, INPUT_DIR))])
+    files = [x for x in os.listdir(os.path.join(os.curdir, INPUT_DIR))]
 
     texts = []
     sources = []
@@ -44,7 +42,7 @@ if __name__ == "__main__":
         source = file.replace(".txt", "")
         sources.append({"source": source})
 
-        with open(file_path, 'r') as f:
+        with open(file_path, "r") as f:
             texts.append(f.read())
 
     def tiktoken_len(text):
